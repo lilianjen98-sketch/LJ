@@ -1,31 +1,16 @@
 // ===== Account Mapping Data =====
 const ACCOUNT_MAPPING_OPTIONS = [
-  { account: "Media Buying", gsplNo: "PL35101000", gsplAccount: "Digital Media" },
-  { account: "Media Buying", gsplNo: "PL35102000", gsplAccount: "Traditional Media" },
-  { account: "Media Creative", gsplNo: "PL35104000", gsplAccount: "Media Agency Fees (Digital)" },
-  { account: "Media Creative", gsplNo: "PL35104100", gsplAccount: "Media Agency Fees (Traditional)" },
-  { account: "Media Creative", gsplNo: "PL35104200", gsplAccount: "Media Agency Fees (Common)" },
-  { account: "Media Creative", gsplNo: "PL35105000", gsplAccount: "Media Production (Digital)" },
-  { account: "Media Creative", gsplNo: "PL35105100", gsplAccount: "Media Production (Traditional)" },
-  { account: "Media Creative", gsplNo: "PL35105200", gsplAccount: "Media Production (Common)" },
-  { account: "Media Creative", gsplNo: "PL35106000", gsplAccount: "Models/Influencers (Digital)" },
-  { account: "Media Creative", gsplNo: "PL35106100", gsplAccount: "Models/Influencers (Traditional)" },
-  { account: "Media Creative", gsplNo: "PL35106200", gsplAccount: "Models/Influencers (Common)" },
-  { account: "POSM", gsplNo: "PL35111000", gsplAccount: "Samples" },
-  { account: "POSM", gsplNo: "PL35112000", gsplAccount: "Testers" },
-  { account: "POSM", gsplNo: "PL35113000", gsplAccount: "Gift With Purchase" },
-  { account: "POSM", gsplNo: "PL35115000", gsplAccount: "Other POSM" },
-  { account: "Selling Enhancement Expenses", gsplNo: "PL35131000", gsplAccount: "Event/PR" },
-  { account: "Selling Enhancement Expenses", gsplNo: "PL35132000", gsplAccount: "Education & Training" },
-  { account: "Selling Enhancement Expenses", gsplNo: "PL35134000", gsplAccount: "Visual Merchandising" },
-  { account: "Selling Enhancement Expenses", gsplNo: "PL35135000", gsplAccount: "Other Digital Expenses" },
-  { account: "Selling Contribution Expenses", gsplNo: "PL35151000", gsplAccount: "Promotion Contribution" },
-  { account: "Freight", gsplNo: "PL35701000", gsplAccount: "Freight" },
-  { account: "Outsourced Expenses", gsplNo: "PL35702000", gsplAccount: "Outsourced Expenses" },
-  { account: "Recharged Back Office Expenses", gsplNo: "PL35703000", gsplAccount: "Recharged Back Office Expenses" },
-  { account: "Lease payments (short-term and small-amount leases)", gsplNo: "PL35705000", gsplAccount: "Lease payments" },
-  { account: "Other SGA Expenses", gsplNo: "PL35706000", gsplAccount: "Other SGA Expenses" },
-  { account: "Loss From Sale or Abandonment of Fixed Assets(SG&A)", gsplNo: "PL35708000", gsplAccount: "Loss From Sale or Abandonment of Fixed Assets(SG&A)" }
+  "Media Buying",
+  "Media Creative",
+  "POSM",
+  "Selling Enhancement Expenses",
+  "Selling Contribution Expenses",
+  "Freight",
+  "Outsourced Expenses",
+  "Recharged Back Office Expenses",
+  "Lease payments (short-term and small-amount leases)",
+  "Other SGA Expenses",
+  "Loss From Sale or Abandonment of Fixed Assets(SG&A)"
 ];
 
 // ===== Auth Check =====
@@ -589,8 +574,8 @@ function setupListeners() {
   const amSel = document.getElementById('exp-account-mapping');
   ACCOUNT_MAPPING_OPTIONS.forEach(opt => {
     const o = document.createElement('option');
-    o.value = opt.account + ' – ' + opt.gsplAccount + ' (' + opt.gsplNo + ')';
-    o.textContent = opt.account + ' – ' + opt.gsplAccount;
+    o.value = opt;
+    o.textContent = opt;
     amSel.appendChild(o);
   });
 
