@@ -62,7 +62,8 @@ const expenseSchema = new mongoose.Schema({
   description: { type: String, default: '' },
   migoNo:      { type: String, default: '' },
   prNo:        { type: String, default: '' },
-  notes:       { type: String, default: '' },
+  notes:          { type: String, default: '' },
+  accountMapping: { type: String, default: '' },
   createdBy:   { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   createdAt:   { type: Date, default: Date.now }
 });
@@ -326,12 +327,12 @@ app.get('/api/expenses', auth, async (req, res) => {
 
 app.post('/api/expenses', auth, async (req, res) => {
   try {
-    const { date, department, brand, glCode, glName, amountExTax, amountInTax, description, migoNo, prNo, notes } = req.body;
+    const { date, department, brand, glCode, glName, amountExTax, amountInTax, description, migoNo, prNo, notes, accountMapping } = req.body;
     const d = new Date(date);
     const month = d.getMonth() + 1;
     const quarter = Math.ceil(month / 3);
     const fiscalYear = d.getFullYear();
-    const expense = await Expense.create({ date: d, fiscalYear, department, brand: brand || '', glCode, glName, month, quarter, amountExTax: amountExTax || 0, amountInTax: amountInTax || 0, description, migoNo: migoNo || '', prNo: prNo || '', notes, createdBy: req.user.userId });
+    const expense = await Expense.create({ date: d, fiscalYear, department, brand: brand || '', glCode, glName, month, quarter, amountExTax: amountExTax || 0, amountInTax: amountInTax || 0, description, migoNo: migoNo || '', prNo: prNo || '', notes, accountMapping: accountMapping || '', createdBy: req.user.userId });
     checkAndNotify(fiscalYear, department, brand || '', glCode, glName, quarter).catch(() => {});
     res.json({ message: '已登記費用', expense });
   } catch (err) { res.status(500).json({ error: err.message }); }
