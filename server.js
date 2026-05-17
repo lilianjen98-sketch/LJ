@@ -391,8 +391,8 @@ app.get('/api/export/expenses', auth, async (req, res) => {
     const year = parseInt(req.query.year) || 2026;
     const filter = { fiscalYear: year, ...deptFilter(req) };
     const expenses = await Expense.find(filter).populate('createdBy', 'displayName').sort('-date').lean();
-    const rows = [['日期', '部門', '品牌', 'GL代碼', 'GL名稱', '費用未稅', '含稅', '費用說明', 'MIGO單號', '請購單PR', '備註', '登記人']];
-    for (const e of expenses) { rows.push([e.date ? new Date(e.date).toISOString().split('T')[0] : '', e.department, e.brand, e.glCode, e.glName, e.amountExTax || 0, e.amountInTax || 0, e.description, e.migoNo || '', e.prNo || '', e.notes, e.createdBy?.displayName || '']); }
+    const rows = [['日期', '部門', '品牌', 'GL代碼', 'GL名稱', 'Account Mapping', '費用未稅', '含稅', '費用說明', 'MIGO單號', '請購單PR', '備註', '登記人']];
+    for (const e of expenses) { rows.push([e.date ? new Date(e.date).toISOString().split('T')[0] : '', e.department, e.brand, e.glCode, e.glName, e.accountMapping || '', e.amountExTax || 0, e.amountInTax || 0, e.description, e.migoNo || '', e.prNo || '', e.notes, e.createdBy?.displayName || '']); }
     const ws = XLSX.utils.aoa_to_sheet(rows);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, '費用紀錄');
