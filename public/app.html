@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>B26 預算管理系統</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Nav -->
+    <nav class="top-nav">
+      <div class="nav-left">
+        <span style="font-size:1.3rem">💎</span>
+        <h1 class="nav-title">部門預算管理大表</h1>
+        <span class="nav-badge" id="fy-badge">FY2026</span>
+      </div>
+      <div class="nav-tabs">
+        <button class="nav-tab active" data-tab="dashboard">儀表板</button>
+        <button class="nav-tab" data-tab="expenses">費用登記</button>
+        <button class="nav-tab" data-tab="upload" id="tab-upload">匯入預算</button>
+        <button class="nav-tab" data-tab="admin" id="tab-admin">使用者管理</button>
+      </div>
+      <div class="nav-right">
+        <select id="year-select" class="nav-select">
+          <option value="2025">FY2025</option>
+          <option value="2026" selected>FY2026</option>
+          <option value="2027">FY2027</option>
+        </select>
+        <span class="user-name" id="user-name"></span>
+        <button class="btn btn-logout btn-sm" id="logout-btn">登出</button>
+      </div>
+    </nav>
+
+    <!-- ==================== Tab: Dashboard ==================== -->
+    <div class="tab-content active" id="tab-dashboard">
+      <section class="summary-strip">
+        <div class="summary-card"><div class="card-icon">📊</div><div class="card-info"><span class="card-label">全年總預算</span><span class="card-value" id="s-budget">NT$ 0</span></div></div>
+        <div class="summary-card"><div class="card-icon">💰</div><div class="card-info"><span class="card-label">已使用金額</span><span class="card-value" id="s-used">NT$ 0</span></div></div>
+        <div class="summary-card"><div class="card-icon">✅</div><div class="card-info"><span class="card-label">剩餘可用</span><span class="card-value" id="s-remain">NT$ 0</span></div></div>
+        <div class="summary-card"><div class="card-icon">📈</div><div class="card-info"><span class="card-label">使用率</span><span class="card-value" id="s-rate">0%</span></div><div class="mini-bar-wrap"><div class="mini-bar" id="s-bar" style="width:0%"></div></div></div>
+      </section>
+
+      <!-- Tree Table -->
+      <section class="panel">
+        <div class="panel-header">
+          <h2>📋 預算展開大表</h2>
+          <div class="table-controls">
+            <select id="f-dept" class="ctrl-select"><option value="ALL">全部部門</option></select>
+            <select id="f-month" class="ctrl-select">
+              <option value="ALL">全年總計</option>
+              <option value="Q1">Q1 (1-3月)</option>
+              <option value="Q2">Q2 (4-6月)</option>
+              <option value="Q3">Q3 (7-9月)</option>
+              <option value="Q4">Q4 (10-12月)</option>
+              <option value="1">1月</option><option value="2">2月</option><option value="3">3月</option>
+              <option value="4">4月</option><option value="5">5月</option><option value="6">6月</option>
+              <option value="7">7月</option><option value="8">8月</option><option value="9">9月</option>
+              <option value="10">10月</option><option value="11">11月</option><option value="12">12月</option>
+            </select>
+            <button class="btn btn-sm" id="btn-expand">展開</button>
+            <button class="btn btn-sm" id="btn-collapse">收合</button>
+            <button class="btn btn-sm btn-outline" id="btn-export-budget">📥 匯出預算</button>
+            <button class="btn btn-sm btn-outline" id="btn-export-expense">📥 匯出費用</button>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table class="budget-table">
+            <thead><tr>
+              <th class="col-name">階層 / 科目名稱</th>
+              <th class="col-num">總預算</th>
+              <th class="col-num">已使用</th>
+              <th class="col-num">剩餘</th>
+              <th class="col-bar">使用率</th>
+            </tr></thead>
+            <tbody id="tree-body">
+              <tr><td colspan="5" class="empty-state"><div class="empty-icon">📂</div><p>載入中...</p></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Charts -->
+      <section class="panel">
+        <div class="panel-header"><h2>📈 預算分析</h2></div>
+        <div class="charts-grid">
+          <div class="chart-card"><h3>各品牌預算佔比</h3><div class="chart-wrap"><canvas id="chart-pie"></canvas></div></div>
+          <div class="chart-card"><h3>各部門使用率</h3><div class="chart-wrap"><canvas id="chart-bar"></canvas></div></div>
+          <div class="chart-card"><h3>月份費用趨勢</h3><div class="chart-wrap"><canvas id="chart-line"></canvas></div></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ==================== Tab: Expenses ==================== -->
+    <div class="tab-content" id="tab-expenses">
+      <section class="panel">
+        <div class="panel-header"><h2>🧾 登記費用</h2></div>
+        <div class="expense-panel">
+          <div class="expense-form-col">
+            <div class="field"><label>報帳日期</label><input type="date" id="exp-date" required></div>
+            <div class="field"><label>選擇部門</label><select id="exp-dept" required><option value="">-- 選擇部門 --</option></select></div>
+            <div class="field"><label>選擇品牌</label><select id="exp-brand" required disabled><option value="">-- 選擇品牌 --</option></select></div>
+            <div class="field"><label>選擇會計科目</label><select id="exp-gl" required disabled><option value="">-- 選擇科目 --</option></select></div>
+          </div>
+          <div class="expense-form-col">
+            <div id="exp-balance" class="balance-hint hidden"><span>該科目年度可用餘額</span><strong id="exp-bal-val">NT$ 0</strong></div>
+            <div class="field"><label>費用未稅 <span style="color:var(--danger)">*</span></label><input type="number" id="exp-amount-ex" min="0" required placeholder="請輸入未稅金額"></div>
+            <div class="field"><label>含稅 <span style="color:var(--danger)">*</span></label><input type="number" id="exp-amount-in" min="0" required placeholder="請輸入含稅金額"></div>
+            <div class="field"><label>費用說明 <span style="color:var(--danger)">*</span></label><input type="text" id="exp-desc" required placeholder="例如：3月促銷活動包裝設計"></div>
+            <div class="field"><label>MIGO單號</label><input type="text" id="exp-migo" placeholder="選填"></div>
+            <div class="field"><label>請購單PR</label><input type="text" id="exp-pr" placeholder="選填"></div>
+            <div class="field"><label>備註 / 發票號碼</label><input type="text" id="exp-notes" placeholder="選填"></div>
+            <button class="btn btn-primary btn-full" id="exp-submit" disabled>請先選擇科目</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>📜 報帳紀錄</h2>
+          <div class="table-controls">
+            <select id="hist-month" class="ctrl-select">
+              <option value="">全部月份</option>
+              <option value="1">1月</option><option value="2">2月</option><option value="3">3月</option>
+              <option value="4">4月</option><option value="5">5月</option><option value="6">6月</option>
+              <option value="7">7月</option><option value="8">8月</option><option value="9">9月</option>
+              <option value="10">10月</option><option value="11">11月</option><option value="12">12月</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table class="history-table">
+            <thead><tr>
+              <th>日期</th><th>部門</th><th>品牌</th><th>GL科目</th><th>費用未稅</th><th>含稅</th><th>說明</th><th>MIGO單號</th><th>請購單PR</th><th>備註</th><th>登記人</th><th></th>
+            </tr></thead>
+            <tbody id="hist-body">
+              <tr><td colspan="12" class="empty-state">尚無紀錄</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- ==================== Tab: Upload ==================== -->
+    <div class="tab-content" id="tab-upload-content">
+      <section class="panel">
+        <div class="panel-header"><h2>📤 匯入預算底稿</h2></div>
+        <div class="upload-area" id="upload-area">
+          <div class="upload-icon">📂</div>
+          <p>點擊選擇或拖曳 Excel / CSV 檔案</p>
+          <p style="color:var(--text3); font-size:.8rem; margin-top:.5rem">支援 .xlsx .xls .csv 格式</p>
+          <input type="file" id="upload-file" accept=".xlsx,.xls,.csv" style="display:none">
+        </div>
+        <div id="upload-result" class="hidden" style="padding:1rem"></div>
+      </section>
+    </div>
+
+    <!-- ==================== Tab: Admin ==================== -->
+    <div class="tab-content" id="tab-admin-content">
+      <section class="panel">
+        <div class="panel-header"><h2>👥 使用者管理</h2></div>
+        <div class="admin-form" id="user-form">
+          <div class="field"><label>帳號</label><input type="text" id="u-username" required></div>
+          <div class="field"><label>密碼</label><input type="password" id="u-password" placeholder="新建必填 / 修改留空不改"></div>
+          <div class="field"><label>顯示名稱</label><input type="text" id="u-name" required></div>
+          <div class="field"><label>Email</label><input type="email" id="u-email"></div>
+          <div class="field"><label>角色</label>
+            <select id="u-role">
+              <option value="staff">員工 (staff)</option>
+              <option value="manager">主管 (manager)</option>
+              <option value="admin">管理員 (admin)</option>
+            </select>
+          </div>
+          <div class="field"><label>所屬部門</label><input type="text" id="u-dept" placeholder="員工必填，管理員可留空"></div>
+          <div class="field" style="align-self:end;display:flex;gap:.5rem">
+            <button class="btn btn-primary btn-full" id="u-submit">新增使用者</button>
+            <button class="btn btn-ghost btn-full" id="u-cancel" style="display:none" onclick="cancelEditUser()">取消</button>
+          </div>
+        </div>
+        <div class="table-scroll" style="padding:0 1rem 1rem">
+          <table class="history-table">
+            <thead><tr><th>帳號</th><th>名稱</th><th>Email</th><th>角色</th><th>部門</th><th>狀態</th><th>紀錄</th><th>編輯</th><th></th></tr></thead>
+            <tbody id="users-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- User Expenses Modal -->
+  <div id="user-expenses-modal" class="modal-overlay" style="display:none">
+    <div class="panel" style="width:90%;max-width:900px;max-height:80vh;overflow:auto;margin:5vh auto;position:relative">
+      <div class="panel-header">
+        <h2 id="uem-title">使用者紀錄</h2>
+        <button class="btn btn-sm btn-ghost" onclick="document.getElementById('user-expenses-modal').style.display='none'" style="font-size:1.2rem">✕</button>
+      </div>
+      <div style="padding:0 1rem .5rem;font-weight:600" id="uem-total"></div>
+      <div class="table-scroll" style="padding:0 1rem 1rem">
+        <table class="history-table">
+          <thead><tr><th>日期</th><th>部門</th><th>品牌</th><th>GL科目</th><th>未稅</th><th>含稅</th><th>說明</th><th>MIGO</th><th>PR</th><th>備註</th></tr></thead>
+          <tbody id="uem-body"><tr><td colspan="10" class="empty-state">載入中...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
