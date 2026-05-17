@@ -103,6 +103,7 @@
             <div class="field"><label>選擇部門</label><select id="exp-dept" required><option value="">-- 選擇部門 --</option></select></div>
             <div class="field"><label>選擇品牌</label><select id="exp-brand" required disabled><option value="">-- 選擇品牌 --</option></select></div>
             <div class="field"><label>選擇會計科目</label><select id="exp-gl" required disabled><option value="">-- 選擇科目 --</option></select></div>
+            <div class="field"><label>Account Mapping</label><select id="exp-account-mapping"><option value="">-- 選擇 Account --</option></select></div>
           </div>
           <div class="expense-form-col">
             <div id="exp-balance" class="balance-hint hidden"><span>該科目年度可用餘額</span><strong id="exp-bal-val">NT$ 0</strong></div>
@@ -133,10 +134,10 @@
         <div class="table-scroll">
           <table class="history-table">
             <thead><tr>
-              <th>日期</th><th>部門</th><th>品牌</th><th>GL科目</th><th>費用未稅</th><th>含稅</th><th>說明</th><th>MIGO單號</th><th>請購單PR</th><th>備註</th><th>登記人</th><th></th>
+              <th>日期</th><th>部門</th><th>品牌</th><th>GL科目</th><th>Account Mapping</th><th>費用未稅</th><th>含稅</th><th>說明</th><th>MIGO單號</th><th>請購單PR</th><th>備註</th><th>登記人</th><th></th>
             </tr></thead>
             <tbody id="hist-body">
-              <tr><td colspan="12" class="empty-state">尚無紀錄</td></tr>
+              <tr><td colspan="13" class="empty-state">尚無紀錄</td></tr>
             </tbody>
           </table>
         </div>
