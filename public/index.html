@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>B26 預算管理系統 | 登入</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="login-page">
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-logo">💎</div>
+        <h1>部門預算管理系統</h1>
+        <p>B26 Budget Control System</p>
+      </div>
+      <form id="login-form">
+        <div class="field">
+          <label>帳號</label>
+          <input type="text" id="username" required autofocus>
+        </div>
+        <div class="field">
+          <label>密碼</label>
+          <input type="password" id="password" required>
+        </div>
+        <div id="login-error" class="error-msg hidden"></div>
+        <button type="submit" class="btn btn-primary btn-full">登入</button>
+      </form>
+    </div>
+    <p class="login-footer">Shiseido Asia Pacific &copy; 2026</p>
+  </div>
+  <script>
+    if (localStorage.getItem('token')) window.location.href = 'app.html';
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errEl = document.getElementById('login-error');
+      errEl.classList.add('hidden');
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        window.location.href = 'app.html';
+      } catch (err) {
+        errEl.textContent = err.message;
+        errEl.classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>
