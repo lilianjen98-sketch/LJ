@@ -16,7 +16,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 let isConnected = false;
 async function connectDB() {
   if (isConnected && mongoose.connection.readyState === 1) return;
-  await mongoose.connect(process.env.MONGODB_URI);
+  await mongoose.connect(process.env.MONGODB_URI, { dbName: 'b26budget' });
   isConnected = true;
 }
 app.use(async (req, res, next) => {
